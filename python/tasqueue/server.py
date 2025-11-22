@@ -420,9 +420,16 @@ class Server:
         self.logger.debug(f"Starting consumer for queue '{queue}'")
 
         async def callback(msg: bytes):
-            await work_queue.put(msg)
+            if self._running:
+                await work_queue.put(msg)
 
-        await self.broker.consume(queue, callback)
+        # Run consume in background (it's a blocking operation)
+        try:
+            await self.broker.consume(queue, callback)
+        except asyncio.CancelledError:
+            self.logger.info(f"Consumer for queue '{queue}' cancelled")
+        except Exception as e:
+            self.logger.error(f"Error in consumer for queue '{queue}': {e}")
 
     async def _process(self, work_queue: asyncio.Queue) -> None:
         """Process jobs from work queue"""

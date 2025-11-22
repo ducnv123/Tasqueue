@@ -40,8 +40,13 @@ class RedisBroker:
 
     async def enqueue(self, msg: bytes, queue: str) -> None:
         """Enqueue a message to Redis list"""
+        import logging
+        logger = logging.getLogger(__name__)
+
         redis = await self._get_redis()
-        await redis.rpush(f"tasqueue:queue:{queue}", msg)
+        queue_key = f"tasqueue:queue:{queue}"
+        await redis.rpush(queue_key, msg)
+        logger.info(f"Enqueued message to {queue_key}, size: {len(msg)} bytes")
 
     async def enqueue_scheduled(self, msg: bytes, queue: str, eta: datetime) -> None:
         """Enqueue a scheduled message using Redis sorted set"""
@@ -55,9 +60,14 @@ class RedisBroker:
 
     async def consume(self, queue: str, callback: Callable[[bytes], None]) -> None:
         """Consume messages from Redis list"""
+        import logging
+        logger = logging.getLogger(__name__)
+
         redis = await self._get_redis()
         queue_key = f"tasqueue:queue:{queue}"
         self._consuming[queue] = True
+
+        logger.info(f"Redis consumer started for queue: {queue_key}")
 
         # Start scheduled processor
         asyncio.create_task(self._process_scheduled(queue))
@@ -65,13 +75,17 @@ class RedisBroker:
         while self._consuming.get(queue, False):
             try:
                 # BLPOP with timeout to allow checking _consuming flag
+                logger.debug(f"Waiting for messages on {queue_key}...")
                 result = await redis.blpop([queue_key], timeout=1)
                 if result:
                     _, msg = result
+                    logger.info(f"Received message from {queue_key}, size: {len(msg)} bytes")
                     await callback(msg)
             except Exception as e:
-                print(f"Error in Redis consumer: {e}")
+                logger.error(f"Error in Redis consumer: {e}")
                 await asyncio.sleep(1)
+
+        logger.info(f"Redis consumer stopped for queue: {queue_key}")
 
     async def _process_scheduled(self, queue: str) -> None:
         """Process scheduled messages"""
