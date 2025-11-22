@@ -116,9 +116,9 @@ async def main():
     # Enqueue a chain of jobs
     print("\n=== Enqueueing a chain of jobs ===")
     jobs = [
-        Job.create("add", json.dumps({'value': 5}).encode(), JobOpts()),  # 5 + 10 = 15
-        Job.create("multiply", json.dumps({}).encode(), JobOpts()),        # 15 * 2 = 30
-        Job.create("add", json.dumps({}).encode(), JobOpts()),             # 30 + 10 = 40
+        Job.create("add", json.dumps({'value': 5}).encode(), JobOpts(queue="operations")),  # 5 + 10 = 15
+        Job.create("multiply", json.dumps({}).encode(), JobOpts(queue="operations")),        # 15 * 2 = 30
+        Job.create("add", json.dumps({}).encode(), JobOpts(queue="operations")),             # 30 + 10 = 40
     ]
 
     chain = Chain.create(jobs, ChainOpts())
