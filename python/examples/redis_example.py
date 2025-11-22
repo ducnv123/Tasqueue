@@ -5,6 +5,7 @@ Example using Redis broker and results backend
 import asyncio
 import json
 import logging
+import os
 
 import sys
 sys.path.insert(0, '..')
@@ -19,6 +20,12 @@ logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
+
+# Get Redis connection from environment or use defaults
+REDIS_HOST = os.getenv('REDIS_HOST', 'localhost')
+REDIS_PORT = int(os.getenv('REDIS_PORT', '6379'))
+REDIS_DB = int(os.getenv('REDIS_DB', '0'))
+REDIS_PASSWORD = os.getenv('REDIS_PASSWORD', None)
 
 
 # Example task handlers
@@ -60,15 +67,19 @@ async def multiply_handler(payload: bytes, ctx: JobContext) -> None:
 
 async def main():
     # Create broker and results backend
+    logging.info(f"Connecting to Redis at {REDIS_HOST}:{REDIS_PORT}")
+
     broker = RedisBroker(
-        host="localhost",
-        port=6379,
-        db=0
+        host=REDIS_HOST,
+        port=REDIS_PORT,
+        db=REDIS_DB,
+        password=REDIS_PASSWORD
     )
     results = RedisResults(
-        host="localhost",
-        port=6379,
-        db=0
+        host=REDIS_HOST,
+        port=REDIS_PORT,
+        db=REDIS_DB,
+        password=REDIS_PASSWORD
     )
 
     # Create server

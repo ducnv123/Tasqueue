@@ -31,6 +31,8 @@ services:
       - TASQUEUE_ENV=production
       - REDIS_HOST=redis
       - REDIS_PORT=6379
+      - REDIS_DB=0
+      - REDIS_PASSWORD=
     volumes:
       - ./config.yaml:/app/config.yaml
       - ./tasqueue:/app/tasqueue
