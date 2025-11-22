@@ -126,15 +126,19 @@ async def main():
     print(f"Enqueued chain: {chain_id}")
 
     # Monitor chain status
-    for i in range(10):
+    for i in range(15):  # Increased timeout for chain completion
         await asyncio.sleep(1)
         chain_msg = await server.get_chain(chain_id)
         print(f"Chain status ({i+1}s): {chain_msg.meta.status}")
         print(f"  Current job: {chain_msg.meta.job_id}")
-        print(f"  Completed jobs: {chain_msg.meta.prev_jobs}")
+        print(f"  Completed jobs: {len(chain_msg.meta.prev_jobs)} job(s)")
 
         if chain_msg.meta.status in ["successful", "failed"]:
+            print(f"\n✅ Chain completed with status: {chain_msg.meta.status}")
+            print(f"   Total jobs completed: {len(chain_msg.meta.prev_jobs)}")
             break
+    else:
+        print("\n⚠️ Chain did not complete within timeout")
 
     # Get final result
     if chain_msg.meta.prev_jobs:
