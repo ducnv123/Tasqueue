@@ -1,0 +1,60 @@
+# Tasqueue Configuration File
+
+# Redis Broker Configuration
+broker:
+  type: redis  # redis or memory
+  redis:
+    host: localhost
+    port: 6379
+    db: 0
+    password: null
+    max_connections: 10
+    socket_timeout: null
+    socket_connect_timeout: 5.0
+
+# Redis Results Configuration
+results:
+  type: redis  # redis or memory
+  redis:
+    host: localhost
+    port: 6379
+    db: 0
+    password: null
+    max_connections: 10
+    socket_timeout: null
+    socket_connect_timeout: 5.0
+
+# Server Configuration
+server:
+  default_concurrency: 4
+  log_level: INFO
+  log_format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+
+# Queue Configuration
+queues:
+  default:
+    name: tasqueue:tasks
+    concurrency: 4
+
+  # Example custom queues
+  # high_priority:
+  #   name: tasqueue:high
+  #   concurrency: 10
+  #
+  # low_priority:
+  #   name: tasqueue:low
+  #   concurrency: 2
+
+# Job Defaults
+job_defaults:
+  max_retries: 3
+  timeout_seconds: 300  # 5 minutes
+
+# Development/Testing overrides
+development:
+  broker:
+    type: memory
+  results:
+    type: memory
+  server:
+    log_level: DEBUG
