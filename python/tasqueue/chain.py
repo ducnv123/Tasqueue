@@ -8,10 +8,7 @@ import uuid as uuid_lib
 import msgpack
 
 from .job import Job
-from . import STATUS_PROCESSING, STATUS_DONE, STATUS_FAILED
-
-
-CHAIN_PREFIX = "chain:msg:"
+from .constants import STATUS_PROCESSING, STATUS_DONE, STATUS_FAILED, CHAIN_PREFIX
 
 
 @dataclass

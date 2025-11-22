@@ -8,11 +8,7 @@ from datetime import datetime, timedelta
 import uuid as uuid_lib
 import msgpack
 
-from . import STATUS_QUEUED
-
-
-DEFAULT_QUEUE = "tasqueue:tasks"
-DEFAULT_MAX_RETRY = 1
+from .constants import STATUS_QUEUED, DEFAULT_QUEUE, DEFAULT_MAX_RETRY
 
 
 @dataclass

@@ -2,6 +2,16 @@
 Tasqueue - A lightweight, distributed job/worker implementation in Python
 """
 
+from .constants import (
+    STATUS_QUEUED,
+    STATUS_PROCESSING,
+    STATUS_FAILED,
+    STATUS_DONE,
+    STATUS_RETRYING,
+    DEFAULT_QUEUE,
+    DEFAULT_MAX_RETRY,
+)
+
 from .server import Server, ServerOpts, TaskOpts
 from .job import Job, JobOpts, JobContext
 from .group import Group, GroupOpts
@@ -22,11 +32,9 @@ __all__ = [
     "ChainOpts",
     "Broker",
     "Results",
+    "STATUS_QUEUED",
+    "STATUS_PROCESSING",
+    "STATUS_FAILED",
+    "STATUS_DONE",
+    "STATUS_RETRYING",
 ]
-
-# Job status constants
-STATUS_QUEUED = "queued"
-STATUS_PROCESSING = "processing"
-STATUS_FAILED = "failed"
-STATUS_DONE = "successful"
-STATUS_RETRYING = "retrying"

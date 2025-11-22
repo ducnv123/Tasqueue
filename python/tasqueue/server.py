@@ -11,20 +11,21 @@ import os
 
 from .interfaces import Broker, Results
 from .job import Job, JobContext, JobMessage, Meta, default_meta, JobOpts
-from .group import Group, GroupMessage, GroupMeta, get_group_status, GROUP_PREFIX
-from .chain import Chain, ChainMessage, ChainMeta, CHAIN_PREFIX
-from . import (
+from .group import Group, GroupMessage, GroupMeta, get_group_status
+from .chain import Chain, ChainMessage, ChainMeta
+from .constants import (
     STATUS_QUEUED,
     STATUS_PROCESSING,
     STATUS_FAILED,
     STATUS_DONE,
     STATUS_RETRYING,
+    JOB_PREFIX,
+    GROUP_PREFIX,
+    CHAIN_PREFIX,
 )
 
 # Handler is a function that processes job payload
 Handler = Callable[[bytes, JobContext], Any]
-
-JOB_PREFIX = "job:msg:"
 
 
 @dataclass

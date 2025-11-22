@@ -8,10 +8,14 @@ import uuid as uuid_lib
 import msgpack
 
 from .job import Job
-from . import STATUS_PROCESSING, STATUS_DONE, STATUS_FAILED, STATUS_QUEUED, STATUS_RETRYING
-
-
-GROUP_PREFIX = "group:msg:"
+from .constants import (
+    STATUS_PROCESSING,
+    STATUS_DONE,
+    STATUS_FAILED,
+    STATUS_QUEUED,
+    STATUS_RETRYING,
+    GROUP_PREFIX,
+)
 
 
 @dataclass
