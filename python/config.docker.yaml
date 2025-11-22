@@ -1,0 +1,55 @@
+# Tasqueue Configuration for Docker
+# Override broker and results to use Docker services
+
+broker:
+  type: redis
+  redis:
+    host: redis  # Docker service name
+    port: 6379
+    db: 0
+    password: null
+    max_connections: 10
+    socket_timeout: null
+    socket_connect_timeout: 5.0
+
+results:
+  type: redis
+  redis:
+    host: redis  # Docker service name
+    port: 6379
+    db: 0
+    password: null
+    max_connections: 10
+    socket_timeout: null
+    socket_connect_timeout: 5.0
+
+server:
+  default_concurrency: 4
+  log_level: INFO
+  log_format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+
+queues:
+  default:
+    name: tasqueue:tasks
+    concurrency: 4
+
+  high_priority:
+    name: tasqueue:high
+    concurrency: 10
+
+  low_priority:
+    name: tasqueue:low
+    concurrency: 2
+
+job_defaults:
+  max_retries: 3
+  timeout_seconds: 300
+
+# Development mode (local without Docker)
+development:
+  broker:
+    type: memory
+  results:
+    type: memory
+  server:
+    log_level: DEBUG

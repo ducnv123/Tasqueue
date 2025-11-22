@@ -1,0 +1,71 @@
+version: '3.8'
+
+services:
+  # Redis - Message broker and results backend
+  redis:
+    image: redis:7-alpine
+    container_name: tasqueue-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    networks:
+      - tasqueue-network
+
+  # Tasqueue Worker
+  tasqueue-worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: tasqueue-worker
+    depends_on:
+      redis:
+        condition: service_healthy
+    environment:
+      - TASQUEUE_ENV=production
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    volumes:
+      - ./config.yaml:/app/config.yaml
+      - ./tasqueue:/app/tasqueue
+      - ./examples:/app/examples
+    command: python examples/redis_example.py
+    networks:
+      - tasqueue-network
+    restart: unless-stopped
+
+  # Example API service (optional - for future use)
+  # tasqueue-api:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   container_name: tasqueue-api
+  #   depends_on:
+  #     redis:
+  #       condition: service_healthy
+  #   ports:
+  #     - "8000:8000"
+  #   environment:
+  #     - TASQUEUE_ENV=production
+  #     - REDIS_HOST=redis
+  #     - REDIS_PORT=6379
+  #   volumes:
+  #     - ./config.yaml:/app/config.yaml
+  #   command: python -m uvicorn api.main:app --host 0.0.0.0 --port 8000
+  #   networks:
+  #     - tasqueue-network
+  #   restart: unless-stopped
+
+volumes:
+  redis_data:
+    driver: local
+
+networks:
+  tasqueue-network:
+    driver: bridge
