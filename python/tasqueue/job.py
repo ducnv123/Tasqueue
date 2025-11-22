@@ -184,10 +184,40 @@ class JobMessage:
             timeout=timedelta(seconds=obj['job']['opts']['timeout']) if obj['job']['opts']['timeout'] else None,
         )
 
+        # Reconstruct on_success jobs
+        on_success = []
+        for j_data in obj['job'].get('on_success', []):
+            j_opts = JobOpts(
+                id=j_data['opts']['id'],
+                queue=j_data['opts']['queue'],
+                max_retries=j_data['opts']['max_retries'],
+            )
+            on_success.append(Job(
+                task=j_data['task'],
+                payload=j_data['payload'],
+                opts=j_opts,
+            ))
+
+        # Reconstruct on_error jobs
+        on_error = []
+        for j_data in obj['job'].get('on_error', []):
+            j_opts = JobOpts(
+                id=j_data['opts']['id'],
+                queue=j_data['opts']['queue'],
+                max_retries=j_data['opts']['max_retries'],
+            )
+            on_error.append(Job(
+                task=j_data['task'],
+                payload=j_data['payload'],
+                opts=j_opts,
+            ))
+
         job = Job(
             task=obj['job']['task'],
             payload=obj['job']['payload'],
             opts=opts,
+            on_success=on_success,
+            on_error=on_error,
         )
 
         return JobMessage(meta=meta, job=job)
